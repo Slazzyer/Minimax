@@ -1,0 +1,38 @@
+\documentclass[12pt,titlepage,german,a4]{article}
+
+\begin{document}
+    \title{\bf Miniprojekt: Minimax-Maschine \\ Pflichtenheft}
+    \date{Hardware Projekt 2017 \\ 03. Januar 2017}
+    \author{Maximilian Lumpe, Niklas Blume, Jan Feuchter, Phu Bac Duong}
+    \maketitle
+
+    \tableofcontents
+
+    \newpage
+
+    \section{Einleitung}
+    In diesem Miniprojekt im Rahmen des Hardware-Praktikums besch{\"a}ftigen wir uns mit der Minimax-Maschine, welche uns grundlegend aus der Vorlesung "Grundlagen der Rechnerarchitektur" bekannt ist. Zur L{\"o}sung der Aufgaben ist es hierbei notwendig, die vorgegebene Grundstruktur der Maschine geeignet zu erweitern, um die Algorithmen zu realisieren.\\Die Vorbereitung auf unser Projekt wird dokumentiert und strukturiert durch das von uns erstellte Pflichtenheft. Das Pflichtenheft wird nur unsere Vorbereitung beinhalten. Die Ergebnisse werden in einer weiteren Dokumentation enthalten sein.
+
+    \section{Aufgabe: Paketanalyse}
+    Nach unserem Verst{\"a}ndniss ist das Ziel der Aufgabenstellung das Implementieren des Algorithmus "Paketanalyse" auf der Minimax-Maschine. Dieser Algorithmus wertet die L{\"a}nge des Nutzdatenteils der Datenpaket aus dem Speicher der Maschine aus.\\Jedes Paket besteht aus einem Header mit 80 Bits gefolgt von dem Datenteil mit variabler L{\"a}nge. Ein Paket beginnt mit dem festgelegten Bitmuster 1110. Der Header enth{\"a}lt eine 2 Bytes lange Kanalnummer, die bei der Bitstelle 32. beginnt. Zu einem Kanal geh{\"o}ren mehrere Datenpakete mit einer eindeutigen Kanalnummer. Die Anzahl der Bits, die in den Speicher geladen werden, wird als bekannt vorausgesetzt und wird in ein entsprechendes Register vorgeladen.\\Nun soll der "Paketanalyse"-Algorithmus eine Tabelle, die Kanalnummern und zugeh{\"o}rige Datenl{\"a}ngen (in Bits) enth{\"a}lt, anlegen. Haben mehrere Paket die selbe Kanalnummer, so werden die L{\"a}ngen des Nutzdatenteils zusammengef{\"u}gt. Die Tabelle soll ab einer beliebigen Speicheradresse au{\ss}erhalb des Paketfeldbereichs im Hauptspeicher der Maschine abgelegt werden.\\Diese Aufgabenstellung soll mit dem gegebenen Minimax-Simulator simuliert und getestet werden. Die Maschine kann durch vorgegebene Bauteile erweitert werden, was sich jedoch auf die Bewertung auswirkt. Der Algorithmus wird in Form der Steuertabelle implementiert und soll au{\ss}erdem als Flussdiagramm abgegeben werden.
+
+    \newpage
+
+    \section{Ist-Analyse der Basismaschine}
+
+    \section{Beschreibung des Implementierungskonzeptes}
+
+    \section{Angestrebte Projektergebnisse}
+        \begin{enumerate}
+            \item erster Stichpunkt
+            \item zweiter Stichpunkt
+            \item dritter Stichpunkt
+        \end{enumerate}
+    \section{Arbeitsplanung und -verteilung}
+
+    \section{Anhang: Flussdiagramme geplanter Mikroprogramme}
+
+    \section{Anhang: Verwendete Hilfsmittle}
+
+
+\end{document}
