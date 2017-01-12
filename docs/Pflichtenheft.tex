@@ -24,12 +24,12 @@
     Im Rahmen der Vorlesung „Grundlagen der Rechnerarchitektur“ haben wir die Minimax-Maschine als Beispiel kennengelernt. Diese Minimax-Maschine ist ein Rechensystem, welches auf Grundprinzip der Von-Neumann-Architektur  basiert. Im Wesentlichen  besteht das System aus einigen Registern und einer arithmetisch-logischen Einheit (ALU), welche den Datenpfad bilden, und einem Hauptspeicher (HS), in welchem Code und Daten gemeinsam liegen.
 
     \subsection{Register der Basismaschine}
-    Die Basismaschine besteht zunächst nur aus f{\"u}nf Registern, welche für Grundfunktionen der Maschine benötigt werden. Diese sind ACCU (zum Speichern von Ergebnissen der ALU), PC(zum Speichern der Nummer der aktuellen Programmzeile), MDR(zum Speichern von aus dem HS gelesenen Daten), IR(zum Speichern des Befehls der aktuellen Programmzeile) und MAR(zum Anlegen bestimmter Speicheradressen).\\
-    Die Register sind als zweiflankengesteuerte Master-Slave-Flipflops ausgelegt. Damit kann ein Register während eines Taktimpulses zunächst als Quelle und dann als Ziel dienen. Der Befehlsablauf dieses Systems wird über ein Mikroprogramm festgelegt. Für unser Projekt kann die Architektur der Minimax-Maschine um zussätzliche Register bzw. Sign Extension Units erweitert werden.
+    Die Basismaschine besteht zun{\"a}chst nur aus f{\"u}nf Registern, welche f{\"u}r Grundfunktionen der Maschine ben{\"o}tigt werden. Diese sind ACCU (zum Speichern von Ergebnissen der ALU), PC(zum Speichern der Nummer der aktuellen Programmzeile), MDR(zum Speichern von aus dem HS gelesenen Daten), IR(zum Speichern des Befehls der aktuellen Programmzeile) und MAR(zum Anlegen bestimmter Speicheradressen).\\
+    Die Register sind als zweiflankengesteuerte Master-Slave-Flipflops ausgelegt. Damit kann ein Register w{\"a}hrend eines Taktimpulses zun{\"a}chst als Quelle und dann als Ziel dienen. Der Befehlsablauf dieses Systems wird {\"u}ber ein Mikroprogramm festgelegt. F{\"u}r unser Projekt kann die Architektur der Minimax-Maschine um zuss{\"a}tzliche Register bzw. Sign Extension Units erweitert werden.
 
 
     \subsection{Operationen der ALU}
-    In der Basismaschine kann die ALU zunächst nur vier Operationen ausführen (bezeichnet mit:  ADD, SUB, TRANS.A, TRANS.B). Die ALU kann aber durch zusätzliche Operationen, wie z.B. dem DIV-Befehl, ergänzt werden.
+    In der Basismaschine kann die ALU zun{\"a}chst nur vier Operationen ausf{\"u}hren (bezeichnet mit:  ADD, SUB, TRANS.A, TRANS.B). Die ALU kann aber durch zus{\"a}tzliche Operationen, wie z.B. dem DIV-Befehl, erg{\"a}nzt werden.
     \begin{itemize}
         \item ADD: Addiert zwei Register
         \item SUB: Subtrahiert zwei Register
@@ -52,17 +52,17 @@
     \end{table}
 
     \subsection{Ein- und Ausgabewerte der ALU}
-    Die Eingangswerte A und B der ALU können über zwei Multiplexer bestimmt werden. A kann die Werte 0, 1 und ACCU annehmen, B die Werte MDR, PC, IR und ACCU. \\
-    Das Ergebnis einer Operation wird als ALU-result auf einen Bus gegeben, wodurch es an jedes beliebige Register geleitet werden kann. Eine weiter Datenleitung führt zur CU, wodurch bestimmte Flags gesetzt werden können(z.B. wenn das Ergebnis der Operation 0 ist)
+    Die Eingangswerte A und B der ALU k{\"o}nnen {\"u}ber zwei Multiplexer bestimmt werden. A kann die Werte 0, 1 und ACCU annehmen, B die Werte MDR, PC, IR und ACCU. \\
+    Das Ergebnis einer Operation wird als ALU-result auf einen Bus gegeben, wodurch es an jedes beliebige Register geleitet werden kann. Eine weiter Datenleitung f{\"u}hrt zur CU, wodurch bestimmte Flags gesetzt werden k{\"o}nnen(z.B. wenn das Ergebnis der Operation 0 ist)
 
     \subsection{CPU-Befehle}
-    Die CPU-Befehle sind 32 Bit breit, wobei das höchstwertige Byte immer den Opcode enthält. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Die Opcode und die Operanden werden zunächst vollständig aus dem Hauptspeicher geladen , bevor ein Befehl ausgeführt wird.
+    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Die Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen , bevor ein Befehl ausgef{\"u}hrt wird.
 
     \section{Beschreibung des Implementierungskonzeptes}
-    Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden (2). Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (3). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein z{\"a}hlregister inkrementiert wird (4). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (5). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (6).
+    Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
 
     \subsection{Identifizierung des Startbitmusters}
-    Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and verkn{\"u}pfung mit Nullen. Anschließend wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
+    Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
 
     \subsection{Kanalnummer extrahieren}
     In der ersten Speicherzelle stehen nun die 4 bits des Startmusters, sowie 28 bits die {\"u}bersprungen werden. Also enth{\"a}lt die erste Speicherzelle keine weiteren Informationen, sodass mit der n{\"a}chsten Speicherzelle fortgefahren wird. Nun m{\"u}ssen die ersten 16 bits, die die Kanalnummer beinhalten, extrahiert werden. Hierf{\"u}r sorgt wieder die bitwise-and Verkn{\"u}pfung der restlichen Bits mit Nullen. Die Kanalnummer muss f{\"u}r die sp{\"a}tere Nutzung abgespeichert werden.
