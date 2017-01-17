@@ -1,6 +1,8 @@
 \documentclass[12pt,titlepage,german,a4]{article}
 
 \usepackage{graphicx}
+\hyphenation{Speicher-zel-le}
+
 \renewcommand{\contentsname}{Inhaltsverzeichnis}
 
 \begin{document}
@@ -62,7 +64,7 @@
     \newpage
 
     \section{Beschreibung des Implementierungskonzeptes}
-    Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
+    Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 Bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
 
     \subsection{Identifizierung des Startbitmusters}
     Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and Verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
@@ -74,7 +76,7 @@
     Auch die zweite Speicherzelle enth{\"a}lt nun keine Informationen mehr. Da in der dritten Speicherzelle noch 16 Bits sind, die nicht zum Datenteil geh{\"o}ren, werden im ersten Durchlauf nur 16 auf das Z{\"a}hlregister f{\"u}r die L{\"a}nge des Datenteils addiert. F{\"u}r jeden weiteren Schleifendurchlauf werden dann 32 addiert.
 
     \subsection{Auf neues Startbitmuster {\"u}berpr{\"u}fen}
-    W{\"a}hrend die Datenbits nach und nach durch shiften gez{\"a}hlt werden, wird permanent auch der Test aus (1). durchgef{\"u}hrt. Sobald das Startbitmuster erkannt ist, bricht die Schleife aus (3) ab und es folgt Schritt (5).
+    W{\"a}hrend die Datenbits nach und nach durch shiften gez{\"a}hlt werden, wird permanent auch der Test aus (1) durchgef{\"u}hrt. Sobald das Startbitmuster erkannt ist, bricht die Schleife aus (3) ab und es folgt Schritt (5).
 
     \subsection{Z{\"a}hlregister zur Tabelle hinzuf{\"u}gen}
     Um die Tabelle zur Speicherung der L{\"a}ngen von den eigentlichen Daten zu trennen, darf diese erst in einer Speicherzelle nach der maximalen Datenl{\"a}nge beginnen. Ab dieser Speicherzelle repr{\"a}sentieren immer zwei aufeinanderfolgende Speicherzellen eine Reihe dieser Tabelle. So beinhaltet die erste Speicherzelle die Kanalnummer 0, die zweite Speicherzelle den entsprechenden Wert f{\"u}r diesen Kanal. Die dritte Speicherzelle beinhaltet wieder die Kanalnummer der n{\"a}chsten Zeile, in diesem Fall die Nummer 1. Danach kommt wieder der Wert f{\"u}r Kanal 1 und so weiter. Die Adresse der ersten Speicherzelle f{\"u}r die Adresse soll dabei in einem Register gespeichert sein. Nun wird die doppelte Kanalnummer auf dieses Register addiert, um die Speicherzelle f{\"u}r eine bestimmte Kanalnummer zu erhalten. Eine Speicherzelle weiter ist somit der entsprechende Wert. Auf den Inhalt dieser Speicherzelle wird dann der Inhalt des Z{\"a}hlregisters addiert. Anschlie{\ss}end werden die tempor{\"a}ren Register zur{\"u}ckgesetzt und der Algorithmus beginnt erneut mit Schritt (2).
