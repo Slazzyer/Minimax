@@ -57,7 +57,7 @@
     Das Ergebnis einer Operation wird als ALU-result auf einen Bus gegeben, wodurch es an jedes beliebige Register geleitet werden kann. Eine weiter Datenleitung f{\"u}hrt zur CU, wodurch bestimmte Flags gesetzt werden k{\"o}nnen(z.B. wenn das Ergebnis der Operation 0 ist)
 
     \subsection{CPU-Befehle}
-    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Der Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen , bevor ein Befehl ausgef{\"u}hrt wird.
+    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Der Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen, bevor ein Befehl ausgef{\"u}hrt wird.
 
     \newpage
 
@@ -65,7 +65,7 @@
     Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
 
     \subsection{Identifizierung des Startbitmusters}
-    Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
+    Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and Verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
 
     \subsection{Kanalnummer extrahieren}
     In der ersten Speicherzelle stehen nun die 4 Bits des Startmusters, sowie 28 Bits die {\"u}bersprungen werden. Also enth{\"a}lt die erste Speicherzelle keine weiteren Informationen, sodass mit der n{\"a}chsten Speicherzelle fortgefahren wird. Nun m{\"u}ssen die ersten 16 Bits, die die Kanalnummer beinhalten, extrahiert werden. Hierf{\"u}r sorgt wieder die bitwise-and Verkn{\"u}pfung der restlichen Bits mit Nullen. Die Kanalnummer muss f{\"u}r die sp{\"a}tere Nutzung abgespeichert werden.
