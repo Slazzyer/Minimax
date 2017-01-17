@@ -1,6 +1,7 @@
 \documentclass[12pt,titlepage,german,a4]{article}
 
 \usepackage{graphicx}
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
 
 \begin{document}
     \title{\bf Miniprojekt: Minimax-Maschine \\ Pflichtenheft}
@@ -16,16 +17,16 @@
     In diesem Miniprojekt im Rahmen des Hardware-Praktikums besch{\"a}ftigen wir uns mit der Minimax-Maschine, welche uns grundlegend aus der Vorlesung "Grundlagen der Rechnerarchitektur" bekannt ist. Zur L{\"o}sung der Aufgaben ist es hierbei notwendig, die vorgegebene Grundstruktur der Maschine geeignet zu erweitern, um die Algorithmen zu realisieren.\\Die Vorbereitung auf unser Projekt wird dokumentiert und strukturiert durch das von uns erstellte Pflichtenheft. Das Pflichtenheft wird nur unsere Vorbereitung beinhalten. Die Ergebnisse werden in einer weiteren Dokumentation enthalten sein.
 
     \section{Aufgabe: Paketanalyse}
-    Nach unserem Verst{\"a}ndniss ist das Ziel der Aufgabenstellung das Implementieren des Algorithmus "Paketanalyse" auf der Minimax-Maschine. Dieser Algorithmus wertet die L{\"a}nge des Nutzdatenteils der Datenpakete aus dem Speicher der Maschine aus.\\Jedes Paket besteht aus einem Header mit 80 Bits, gefolgt von dem Datenteil mit variabler L{\"a}nge. Ein Paket beginnt mit dem festgelegten Bitmuster 1110. Der Header enth{\"a}lt eine 2 Bytes lange Kanalnummer, die bei der Bitstelle 32. beginnt. Zu einem Kanal geh{\"o}ren mehrere Datenpakete mit einer eindeutigen Kanalnummer. Die Anzahl der Bits, die in den Speicher geladen werden, wird als bekannt vorausgesetzt und wird in ein entsprechendes Register vorgeladen.\\Nun soll der "Paketanalyse"-Algorithmus eine Tabelle, die Kanalnummern und zugeh{\"o}rige Datenl{\"a}ngen (in Bits) enth{\"a}lt, anlegen. Haben mehrere Paket dieselbe Kanalnummer, so werden die L{\"a}ngen des Nutzdatenteils zusammengef{\"u}gt. Die Tabelle soll ab einer beliebigen Speicheradresse au{\ss}erhalb des Paketfeldbereichs im Hauptspeicher der Maschine abgelegt werden.\\Diese Aufgabenstellung soll mit dem gegebenen Minimax-Simulator simuliert und getestet werden. Die Maschine kann durch vorgegebene Bauteile erweitert werden, was sich jedoch auf die Bewertung auswirkt. Der Algorithmus wird in Form der Steuertabelle implementiert und soll au{\ss}erdem als Flussdiagramm abgegeben werden.
+    Nach unserem Verst{\"a}ndnis ist das Ziel der Aufgabenstellung das Implementieren des Algorithmus "Paketanalyse" auf der Minimax-Maschine. Dieser Algorithmus wertet die L{\"a}nge des Nutzdatenteils der Datenpakete aus dem Speicher der Maschine aus.\\Jedes Paket besteht aus einem Header mit 80 Bits, gefolgt von dem Datenteil mit variabler L{\"a}nge. Ein Paket beginnt mit dem festgelegten Bitmuster 1110. Der Header enth{\"a}lt eine 2 Bytes lange Kanalnummer, die bei der Bitstelle 32. beginnt. Zu einem Kanal geh{\"o}ren mehrere Datenpakete mit einer eindeutigen Kanalnummer. Die Anzahl der Bits, die in den Speicher geladen werden, wird als bekannt vorausgesetzt und wird in ein entsprechendes Register vorgeladen.\\Nun soll der "Paketanalyse"-Algorithmus eine Tabelle, die Kanalnummern und zugeh{\"o}rige Datenl{\"a}ngen (in Bits) enth{\"a}lt, anlegen. Haben mehrere Pakete dieselbe Kanalnummer, so werden die L{\"a}ngen des Nutzdatenteils addiert. Die Tabelle soll ab einer beliebigen Speicheradresse au{\ss}erhalb des Paketfeldbereichs im Hauptspeicher der Maschine abgelegt werden.\\Diese Aufgabenstellung soll mit dem gegebenen Minimax-Simulator simuliert und getestet werden. Die Maschine kann durch vorgegebene Bauteile erweitert werden, was sich jedoch auf die Bewertung auswirkt. Der Algorithmus wird in Form der Steuertabelle implementiert und soll au{\ss}erdem als Flussdiagramm abgegeben werden.
 
     \newpage
 
     \section{Ist-Analyse der Basismaschine}
-    Im Rahmen der Vorlesung „Grundlagen der Rechnerarchitektur“ haben wir die Minimax-Maschine als Beispiel kennengelernt. Diese Minimax-Maschine ist ein Rechensystem, welches auf Grundprinzip der Von-Neumann-Architektur  basiert. Im Wesentlichen  besteht das System aus einigen Registern und einer arithmetisch-logischen Einheit (ALU), welche den Datenpfad bilden, und einem Hauptspeicher (HS), in welchem Code und Daten gemeinsam liegen.
+    Im Rahmen der Vorlesung "Grundlagen der Rechnerarchitektur" haben wir die Minimax-Maschine als Beispiel kennengelernt. Diese Minimax-Maschine ist ein Rechensystem, welches auf dem Grundprinzip der Von-Neumann-Architektur  basiert. Im Wesentlichen  besteht das System aus einigen Registern und einer arithmetisch-logischen Einheit (ALU), welche den Datenpfad bilden, und einem Hauptspeicher (HS), in welchem Code und Daten gemeinsam liegen.
 
     \subsection{Register der Basismaschine}
-    Die Basismaschine besteht zun{\"a}chst nur aus f{\"u}nf Registern, welche f{\"u}r Grundfunktionen der Maschine ben{\"o}tigt werden. Diese sind ACCU (zum Speichern von Ergebnissen der ALU), PC(zum Speichern der Nummer der aktuellen Programmzeile), MDR(zum Speichern von aus dem HS gelesenen Daten), IR(zum Speichern des Befehls der aktuellen Programmzeile) und MAR(zum Anlegen bestimmter Speicheradressen).\\
-    Die Register sind als zweiflankengesteuerte Master-Slave-Flipflops ausgelegt. Damit kann ein Register w{\"a}hrend eines Taktimpulses zun{\"a}chst als Quelle und dann als Ziel dienen. Der Befehlsablauf dieses Systems wird {\"u}ber ein Mikroprogramm festgelegt. F{\"u}r unser Projekt kann die Architektur der Minimax-Maschine um zuss{\"a}tzliche Register bzw. Sign Extension Units erweitert werden.
+    Die Basismaschine besteht zun{\"a}chst nur aus f{\"u}nf Registern, welche f{\"u}r Grundfunktionen der Maschine ben{\"o}tigt werden. Diese sind ACCU (zum Speichern von Ergebnissen der ALU), PC (zum Speichern der Nummer der aktuellen Programmzeile), MDR (zum Speichern von aus dem HS gelesenen Daten), IR (zum Speichern des Befehls der aktuellen Programmzeile) und MAR (zum Anlegen bestimmter Speicheradressen).\\
+    Die Register sind als zweiflankengesteuerte Master-Slave-Flipflops ausgelegt. Damit kann ein Register w{\"a}hrend eines Taktimpulses zun{\"a}chst als Quelle und dann als Ziel dienen. Der Befehlsablauf dieses Systems wird {\"u}ber ein Mikroprogramm festgelegt. F{\"u}r unser Projekt kann die Architektur der Minimax-Maschine um zus{\"a}tzliche Register erweitert werden.
 
 
     \subsection{Operationen der ALU}
@@ -56,7 +57,9 @@
     Das Ergebnis einer Operation wird als ALU-result auf einen Bus gegeben, wodurch es an jedes beliebige Register geleitet werden kann. Eine weiter Datenleitung f{\"u}hrt zur CU, wodurch bestimmte Flags gesetzt werden k{\"o}nnen(z.B. wenn das Ergebnis der Operation 0 ist)
 
     \subsection{CPU-Befehle}
-    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Die Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen , bevor ein Befehl ausgef{\"u}hrt wird.
+    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Der Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen , bevor ein Befehl ausgef{\"u}hrt wird.
+
+    \newpage
 
     \section{Beschreibung des Implementierungskonzeptes}
     Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
@@ -65,24 +68,24 @@
     Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
 
     \subsection{Kanalnummer extrahieren}
-    In der ersten Speicherzelle stehen nun die 4 bits des Startmusters, sowie 28 bits die {\"u}bersprungen werden. Also enth{\"a}lt die erste Speicherzelle keine weiteren Informationen, sodass mit der n{\"a}chsten Speicherzelle fortgefahren wird. Nun m{\"u}ssen die ersten 16 bits, die die Kanalnummer beinhalten, extrahiert werden. Hierf{\"u}r sorgt wieder die bitwise-and Verkn{\"u}pfung der restlichen Bits mit Nullen. Die Kanalnummer muss f{\"u}r die sp{\"a}tere Nutzung abgespeichert werden.
+    In der ersten Speicherzelle stehen nun die 4 Bits des Startmusters, sowie 28 Bits die {\"u}bersprungen werden. Also enth{\"a}lt die erste Speicherzelle keine weiteren Informationen, sodass mit der n{\"a}chsten Speicherzelle fortgefahren wird. Nun m{\"u}ssen die ersten 16 Bits, die die Kanalnummer beinhalten, extrahiert werden. Hierf{\"u}r sorgt wieder die bitwise-and Verkn{\"u}pfung der restlichen Bits mit Nullen. Die Kanalnummer muss f{\"u}r die sp{\"a}tere Nutzung abgespeichert werden.
 
     \subsection{Datenbits z{\"a}hlen}
-    Auch die zweite Speicherzelle enth{\"a}lt nun keine Informationen mehr. Da in der dritten Speicherzelle noch 16 bits sind, die nicht zum Datenteil geh{\"o}ren, werden im ersten Durchlauf nur 16 auf das Z{\"a}hlregister f{\"u}r die L{\"a}nge des Datenteils addiert. F{\"u}r jeden weiteren Schleifendurchlauf werden dann 32 addiert.
+    Auch die zweite Speicherzelle enth{\"a}lt nun keine Informationen mehr. Da in der dritten Speicherzelle noch 16 Bits sind, die nicht zum Datenteil geh{\"o}ren, werden im ersten Durchlauf nur 16 auf das Z{\"a}hlregister f{\"u}r die L{\"a}nge des Datenteils addiert. F{\"u}r jeden weiteren Schleifendurchlauf werden dann 32 addiert.
 
     \subsection{Auf neues Startbitmuster {\"u}berpr{\"u}fen}
-    W{\"a}hrend die Datenbit nach und nach durch shiften gez{\"a}hlt werden, wird permanent auch der Test aus (1). durchgef{\"u}hrt. Sobald das Startbitmuster erkannt ist, bricht die Schleife aus (3) ab und es folgt Schritt (5).
+    W{\"a}hrend die Datenbits nach und nach durch shiften gez{\"a}hlt werden, wird permanent auch der Test aus (1). durchgef{\"u}hrt. Sobald das Startbitmuster erkannt ist, bricht die Schleife aus (3) ab und es folgt Schritt (5).
 
     \subsection{Z{\"a}hlregister zur Tabelle hinzuf{\"u}gen}
     Um die Tabelle zur Speicherung der L{\"a}ngen von den eigentlichen Daten zu trennen, darf diese erst in einer Speicherzelle nach der maximalen Datenl{\"a}nge beginnen. Die Adresse der ersten Speicherzelle f{\"u}r die Adresse soll dabei in einem Register gespeichert sein. Nun wird die Kanalnummer auf dieses Register addiert, um die Speicherzelle f{\"u}r eine bestimmte Kanalnummer zu erhalten. Damit hat die Kanalnummer 0 die erste Speicherzelle der Tabelle, die Kanalnummer 1 die zweite, usw. . Auf den Inhalt dieser Speicherzelle wird dann der Inhalt des Z{\"a}hlregisters addiert. Anschlie{\ss}end werden die tempor{\"a}ren Register zur{\"u}ckgesetzt und der Algorithmus beginnt erneut mit Schritt (2).
 
-
+    \newpage
 
     \section{Angestrebte Projektergebnisse}
         \begin{itemize}
 			\item Ein Pflichtenheft, in dem wir unsere Vor{\"u}berlegungen festhalten.
 			\item Eine vollst{\"a}ndige und funktionsf{\"a}hige L{\"o}sung mit allen Testdateien.
-			\item Einen Schaltplan, bei dem wir die gegebene Minimax - Maschine um die notwendigen Elemente erweitert haben.
+			\item Einen Schaltplan, bei dem wir die gegebene Minimax-Maschine um die notwendigen Elemente erweitert haben.
 			\item Eine vollst{\"a}ndige Dokumentation, mit der wir unseren Algortihmus und unsere implementierte L{\"o}sung beschreiben und erl{\"a}utern.
         \end{itemize}
 
@@ -94,6 +97,7 @@
 			\item Niklas Blume: Angestrebte Projektergebnisse und Anhang
 		\end{itemize}
 
+    \newpage
 
     \section{Anhang: Flussdiagramme geplanter Mikroprogramme}
 
