@@ -1,0 +1,118 @@
+\documentclass[12pt,titlepage,german,a4]{article}
+
+\usepackage{graphicx}
+\hyphenation{Speicher-zel-le}
+
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+
+\begin{document}
+    \title{\bf Miniprojekt: Minimax-Maschine \\ Dokumentation}
+    \date{Hardware Projekt 2017 \\ 24. Januar 2017}
+    \author{Maximilian Lumpe, Niklas Blume, Jan Feuchter, Phu Bac Duong}
+    \maketitle
+
+    \tableofcontents
+
+    \newpage
+
+    \section{Einleitung}
+    In diesem Miniprojekt im Rahmen des Hardware-Praktikums besch{\"a}ftigen wir uns mit der Minimax-Maschine, welche uns grundlegend aus der Vorlesung "Grundlagen der Rechnerarchitektur" bekannt ist. Zur L{\"o}sung der Aufgaben ist es hierbei notwendig, die vorgegebene Grundstruktur der Maschine geeignet zu erweitern, um die Algorithmen zu realisieren.\\Die Vorbereitung auf unser Projekt wird dokumentiert und strukturiert durch das von uns erstellte Pflichtenheft. Das Pflichtenheft wird nur unsere Vorbereitung beinhalten. Die Ergebnisse werden in einer weiteren Dokumentation enthalten sein.
+
+    \section{Aufgabe: Paketanalyse}
+    Nach unserem Verst{\"a}ndnis ist das Ziel der Aufgabenstellung das Implementieren des Algorithmus "Paketanalyse" auf der Minimax-Maschine. Dieser Algorithmus wertet die L{\"a}nge des Nutzdatenteils der Datenpakete aus dem Speicher der Maschine aus.\\Jedes Paket besteht aus einem Header mit 80 Bits, gefolgt von dem Datenteil mit variabler L{\"a}nge. Ein Paket beginnt mit dem festgelegten Bitmuster 1110. Der Header enth{\"a}lt eine 2 Bytes lange Kanalnummer, die bei der Bitstelle 32. beginnt. Zu einem Kanal geh{\"o}ren mehrere Datenpakete mit einer eindeutigen Kanalnummer. Die Anzahl der Bits, die in den Speicher geladen werden, wird als bekannt vorausgesetzt und wird in ein entsprechendes Register vorgeladen.\\Nun soll der "Paketanalyse"-Algorithmus eine Tabelle, die Kanalnummern und zugeh{\"o}rige Datenl{\"a}ngen (in Bits) enth{\"a}lt, anlegen. Haben mehrere Pakete dieselbe Kanalnummer, so werden die L{\"a}ngen des Nutzdatenteils addiert. Die Tabelle soll ab einer beliebigen Speicheradresse au{\ss}erhalb des Paketfeldbereichs im Hauptspeicher der Maschine abgelegt werden.\\Diese Aufgabenstellung soll mit dem gegebenen Minimax-Simulator simuliert und getestet werden. Die Maschine kann durch vorgegebene Bauteile erweitert werden, was sich jedoch auf die Bewertung auswirkt. Der Algorithmus wird in Form der Steuertabelle implementiert und soll au{\ss}erdem als Flussdiagramm abgegeben werden.
+
+    \newpage
+
+    \section{Ist-Analyse der Basismaschine}
+    Im Rahmen der Vorlesung "Grundlagen der Rechnerarchitektur" haben wir die Minimax-Maschine als Beispiel kennengelernt. Diese Minimax-Maschine ist ein Rechensystem, welches auf dem Grundprinzip der Von-Neumann-Architektur  basiert. Im Wesentlichen  besteht das System aus einigen Registern und einer arithmetisch-logischen Einheit (ALU), welche den Datenpfad bilden, und einem Hauptspeicher (HS), in welchem Code und Daten gemeinsam liegen.
+
+    \subsection{Register der Basismaschine}
+    Die Basismaschine besteht zun{\"a}chst nur aus f{\"u}nf Registern, welche f{\"u}r Grundfunktionen der Maschine ben{\"o}tigt werden. Diese sind ACCU (zum Speichern von Ergebnissen der ALU), PC (zum Speichern der Nummer der aktuellen Programmzeile), MDR (zum Speichern von aus dem HS gelesenen Daten), IR (zum Speichern des Befehls der aktuellen Programmzeile) und MAR (zum Anlegen bestimmter Speicheradressen).\\
+    Die Register sind als zweiflankengesteuerte Master-Slave-Flipflops ausgelegt. Damit kann ein Register w{\"a}hrend eines Taktimpulses zun{\"a}chst als Quelle und dann als Ziel dienen. Der Befehlsablauf dieses Systems wird {\"u}ber ein Mikroprogramm festgelegt. F{\"u}r unser Projekt kann die Architektur der Minimax-Maschine um zus{\"a}tzliche Register erweitert werden.
+
+
+    \subsection{Operationen der ALU}
+    In der Basismaschine kann die ALU zun{\"a}chst nur vier Operationen ausf{\"u}hren (bezeichnet mit:  ADD, SUB, TRANS.A, TRANS.B). Die ALU kann aber durch zus{\"a}tzliche Operationen, wie z.B. dem DIV-Befehl, erg{\"a}nzt werden.
+    \begin{itemize}
+        \item ADD: Addiert zwei Register
+        \item SUB: Subtrahiert zwei Register
+        \item TRANS.A: Leitet den Wert A durch
+        \item TRANS.B: Leitet den Wert B durch
+    \end{itemize}
+    Das Ergebnis kann an eines der oben genannten Register geleitet werden. \\
+    \begin{table}[htpb]
+        \centering
+        \label{hi}
+        \begin{tabular}{ccc}
+            Symbol & ALU-Operation & ALU Ctrl \\
+            \hline
+            ADD & ALUresult \leftarrow A + B & 00 \\
+            SUB & ALUresult \leftarrow -A + B & 01 \\
+            Trans.A & ALUresult \leftarrow A & 10 \\
+            Trans.B & ALUresult \leftarrow B & 11
+        \end{tabular}
+        \caption{ALU-Operationen der Basisimaschine}
+    \end{table}
+
+    \subsection{Ein- und Ausgabewerte der ALU}
+    Die Eingangswerte A und B der ALU k{\"o}nnen {\"u}ber zwei Multiplexer bestimmt werden. A kann die Werte 0, 1 und ACCU annehmen, B die Werte MDR, PC, IR und ACCU. \\
+    Das Ergebnis einer Operation wird als ALU-result auf einen Bus gegeben, wodurch es an jedes beliebige Register geleitet werden kann. Eine weiter Datenleitung f{\"u}hrt zur CU, wodurch bestimmte Flags gesetzt werden k{\"o}nnen(z.B. wenn das Ergebnis der Operation 0 ist)
+
+    \subsection{CPU-Befehle}
+    Die CPU-Befehle sind 32 Bit breit, wobei das h{\"o}chstwertige Byte immer den Opcode enth{\"a}lt. Die verbleibenden 3 Bytes bestimmen dann den Adressteil. Der Opcode und die Operanden werden zun{\"a}chst vollst{\"a}ndig aus dem Hauptspeicher geladen, bevor ein Befehl ausgef{\"u}hrt wird.
+
+    \newpage
+
+    \section{Finale Implementierung}
+
+    \newpage
+
+    \section{Angestrebte Projektergebnisse}
+        \begin{itemize}
+            \item Ein Pflichtenheft, in dem wir unsere Vor{\"u}berlegungen festhalten.
+            \item Eine vollst{\"a}ndige und funktionsf{\"a}hige L{\"o}sung mit allen Testdateien.
+            \item Einen Schaltplan, bei dem wir die gegebene Minimax-Maschine um die notwendigen Elemente erweitert haben.
+            \item Eine vollst{\"a}ndige Dokumentation, mit der wir unseren Algortihmus und unsere implementierte L{\"o}sung beschreiben und erl{\"a}utern.
+        \end{itemize}
+
+    \section{Arbeitsaufteilung}
+    \begin{table}[htpb]
+        \begin{tabular}{|l|l|}
+            \hline
+            \textbf{Name} & \textbf{Aufgabe} \\
+            \hline
+            Maximilian Lumpe & something something  \\
+            \hline
+            Niklas Blume & nothing ... boooh ... \\
+            \hline
+            Jan Feuchter & a bit 01001110011001010111001001100100001111000010111000111100 \\
+            \hline
+            Phu Bac Duong & d \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \newpage
+
+    \section{Projektdurchf{\"u}hrung}
+
+    \newpage
+
+    \section{Bewertung der L{\"o}sung}
+
+    \newpage
+
+    \section{Anhang: Flussdiagramme, Maschinen{\"u}bersicht}
+
+    \newpage
+
+    \section{Anhang: Verwendete Hilfsmittel}
+	\begin{itemize}
+		\item Vorlesung: Grundlagen der Rechnerarchitektur
+		\item Umdruck Paketanalyse 2016/17
+		\item GitHub zur Versionskontrolle und Organisation
+		\item \url{https://www.draw.io} zur Erstellung der Flussdiagramme
+	\end{itemize}
+
+
+\end{document}
