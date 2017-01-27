@@ -65,6 +65,23 @@
 
     \section{Finale Implementierung}
 
+    Bei der Implementierung der Paketanalyse muss zwischen mehreren Teilschritten unterschieden werden. Zun{\"a}chst wird nach dem Startbitmuster des ersten Paketes gesucht (1). Ist ein Paket identifiziert, k{\"o}nnen die ersten 32 Bits (dies entspricht einer Speicherzelle) {\"u}bersprungen werden. Somit beginnt mit der zweiten Speicherzelle die Kanalnummer des Paketes, diese wird extrahiert und abgespeichert (2). Nach 32 weiteren Bits kommt nun der Datenteil, welcher Bit f{\"u}r Bit ausgelesen wird, w{\"a}hrend gleichzeitig ein Z{\"a}hlregister inkrementiert wird (3). W{\"a}hrend dieses Vorgangs wird permanent {\"u}berpr{\"u}ft, ob ein neues Startbitmuster vorliegt, sodass ein neues Paket anf{\"a}ngt (4). Ist dies der Fall, wird das Z{\"a}hlregister auf den momentanen Wert f{\"u}r die Kanalnummer addiert. Die Kanalnummer dient dabei als Offset f{\"u}r die Speicherzelle (5).
+
+    \subsection{Identifizierung des Startbitmusters}
+    Da f{\"u}r das Startbitmuster nur die vier niedrigwertigsten Bits untersucht werden, m{\"u}ssen zun{\"a}chst f{\"u}r einen Vergleich die restlichen ausgeblendet werden. Dies erfolgt durch eine bitwise-and Verkn{\"u}pfung mit Nullen. Anschlie{\ss}end wird das Ergebnis mit dem Startbitmuster verglichen. Sind sie nicht identisch, wird die Speicherzelle geshiftet. Dies wird solange wiederholt, bis das Ergebnis identisch ist, dann wird mit Schritt 2 fortgefahren.
+
+    \subsection{Kanalnummer extrahieren}
+    In der ersten Speicherzelle stehen nun die 4 Bits des Startmusters, sowie 28 Bits die {\"u}bersprungen werden. Also enth{\"a}lt die erste Speicherzelle keine weiteren Informationen, sodass mit der n{\"a}chsten Speicherzelle fortgefahren wird. Nun m{\"u}ssen die ersten 16 Bits, die die Kanalnummer beinhalten, extrahiert werden. Hierf{\"u}r sorgt wieder die bitwise-and Verkn{\"u}pfung der restlichen Bits mit Nullen. Die Kanalnummer muss f{\"u}r die sp{\"a}tere Nutzung abgespeichert werden.
+
+    \subsection{Datenbits z{\"a}hlen}
+    Auch die zweite Speicherzelle enth{\"a}lt nun keine Informationen mehr. Da in der dritten Speicherzelle noch 16 Bits sind, die nicht zum Datenteil geh{\"o}ren, werden im ersten Durchlauf nur 16 auf das Z{\"a}hlregister f{\"u}r die L{\"a}nge des Datenteils addiert. F{\"u}r jeden weiteren Schleifendurchlauf werden dann 32 addiert.
+
+    \subsection{Auf neues Startbitmuster {\"u}berpr{\"u}fen}
+    W{\"a}hrend die Datenbits nach und nach durch shiften gez{\"a}hlt werden, wird permanent auch der Test aus (1) durchgef{\"u}hrt. Sobald das Startbitmuster erkannt ist, bricht die Schleife aus (3) ab und es folgt Schritt (5).
+
+    \subsection{Z{\"a}hlregister zur Tabelle hinzuf{\"u}gen}
+    Um die Tabelle zur Speicherung der L{\"a}ngen von den eigentlichen Daten zu trennen, darf diese erst in einer Speicherzelle nach der maximalen Datenl{\"a}nge beginnen. Ab dieser Speicherzelle repr{\"a}sentieren immer zwei aufeinanderfolgende Speicherzellen eine Reihe dieser Tabelle. So beinhaltet die erste Speicherzelle die Kanalnummer 0, die zweite Speicherzelle den entsprechenden Wert f{\"u}r diesen Kanal. Die dritte Speicherzelle beinhaltet wieder die Kanalnummer der n{\"a}chsten Zeile, in diesem Fall die Nummer 1. Danach kommt wieder der Wert f{\"u}r Kanal 1 und so weiter. Die Adresse der ersten Speicherzelle f{\"u}r die Adresse soll dabei in einem Register gespeichert sein. Nun wird die doppelte Kanalnummer auf dieses Register addiert, um die Speicherzelle f{\"u}r eine bestimmte Kanalnummer zu erhalten. Eine Speicherzelle weiter ist somit der entsprechende Wert. Auf den Inhalt dieser Speicherzelle wird dann der Inhalt des Z{\"a}hlregisters addiert. Anschlie{\ss}end werden die tempor{\"a}ren Register zur{\"u}ckgesetzt und der Algorithmus beginnt erneut mit Schritt (2).
+
     \newpage
 
     \section{Angestrebte Projektergebnisse}
@@ -95,10 +112,54 @@
     \newpage
 
     \section{Projektdurchf{\"u}hrung}
+    \subsection{Initialisierung und erstes Startbit-Muster(Zeile 0-6)}
+    Zun{\"a}chst wird die erste Speicherzelle in das Register MDR geladen. Durch eine bitwise-and Verkn{\"u}pfung werden nur die vier LSBs betrachtet. Sind diese gleich 14, startet der Algorithmus. Ansonsten shiftet das MDR und die neuen LSBs werden betrachtet, solange bis das Startbitmuster gefunden wurde. Gleichzeit wird das Offset vom Speicherzellenanfang mitgespeichert.
+
+    \subsection{Kanalnummer extrahieren (Zeile 7-13)}
+    Nun wird die n{\"a}chste Speicherzelle geladen und diese um das Offset geshiftet. Hierdurch erh{\"a}lt man in dne unteren 16 Bit die Kanalnummer, welche durch bitwise-and mit 65.535(ffff) extrahiert wird.
+
+    \subsection{Datenanfang ermitteln (Zeile 14-24)}
+    Nun wird wieder die n{\"a}chste Speicherzelle betrachtet. Auf das Offset wird zus{\"a}tzlich 16 addiert, da im ersten Schleifendurchlauf 16 Bit {\"u}bersprung werden m{\"u}ssen. Die verbleibenen Bits bis zum Speicherzellenende werden in OffsetData mitgez{\"a}hlt. Sollte das Offset gr{\"o}ßer als 16 sein (Flag vom Ende des Algorithmus ist gesetzt) ist eine weitere Speicherzelle ohne Information und kann {\"u}bersprungen werden.
+
+    \subsection{Datenbits z{\"a}hlen (Zeile 25-37)}
+    Zun{\"a}chst wird diese Speicherzelle um das verbleibene Offset geshiftet. Anschließend wird {\"u}berpr{\"u}ft, ob nun die vier LSBs widerum das Startbitmuster sind. Ist dies der Fall, springt der Algoritmus zum Schritt. Ist dies nicht der Fall, wird die Speicherzelle geshiftet, der Counter der DAtenbits erh{\"o}ht sowie der Counter der verbleibenen Bits bis Speicherzellenende erniedrigt. Sind keine Bits mehr bis Speicherzellenende vorhanden, wird in die n{\"a}chste Speicherzelle gewechselt und der Wert wieder auf 32 gesetzt. Die Speicherzelle wird jedoch in jedem Fall solange geshiftet bis das Startbitmuster erkannt wurde.
+
+    \subsection{Abspeichern (zeile 38-47)}
+    Als n{\"a}chstes wird die aktuelle Speicherzelle tempor{\"a}r zwischen gespeichert. Auf die maximale Datenl{\"a}nge des Pakets wird nun das zweifache des Kanals addiert, da f{\"u}r jeden Kanal zwie Speicherzellen ben{\"o}tigt werden. In der ersten Speicherzelle wird die Kanalnummer abgelegt, in der zweiten die Anzahl der Datenbits. Anschließen wird die Speicheradresse wieder auf ihren {\"u}rsprunglichen Wert zur{\"u}ckgesetzt.
+
+    \subsection{Offset-Manipulation (Zeile 48-57)}
+    War das Offset beim Entdecken des Startbismuster gr{\"o}ßer gleich 16, so f{\"u}hrt dies w{\"a}hrend "Datenanfang ermitteln" zu einem Offset, das gr{\"o}ßer ist als die Speicherzelle selber. Anstelle dessen wird das Offset bei Werten gr{\"o}ßer gleich 16 um 32 verringert und ein Flag, was das {\"u}berspringen einer Speicherzelle zufolge hat.
 
     \newpage
 
     \section{Bewertung der L{\"o}sung}
+    Wir f{\"u}hren die Berechnung unseres Algorithmus durch, um ein Vergleichswert f{\"u}r andere L{\"o}sungen zu haben. Zur Realisierung ben{\"o}tigten wir:
+    \begin{itemize}
+        \item \textbf{reg (Anzahl der erg{\"a}nzten Register):} 9
+        \item \textbf{const (Anzahl der erg{\"a}nzten Konstanten):} 6
+        \item \textbf{alu{\_}add (Anzahl der erg{\"a}nzten ALU-Befehle):} 17
+        \item \textbf{alu{\_}use (Anzahl der verwendeten ALU-Befehle):} 58
+    \end{itemize}
+
+
+
+    \subsection{Laufzeit}
+
+    $t_{bewertet} = t_{bench} * (1 + 0,1*reg + 0,015*alu{\_}add + 0,05*const)$
+
+    \subsubsection{Benchmark 1}
+    $t_{bewertet} = 12365 * (1 + 0,1*9 + 0,015*17 + 0,05*6) = 30356,075$
+
+    \subsubsection{Benchmark 2}
+    $t_{bewertet} = 31966 * (1 + 0,1*9 + 0,015*17 + 0,05*6) = 78476,530$
+
+    \subsubsection{Benchmark 3}
+    $t_{bewertet} = 38510 * (1 + 0,1*9 + 0,015*17 + 0,05*6) = 94542,050$
+
+    \subsection{Algorithmusl{\"a}nge}
+    $n_{bewertet} = n_{algorithmus} + 5* reg + 3*alu{\_}use + 5* const$\\
+    $n_{bewertet} = 59+5*9+3*58+5*6 = 308$
+
 
     \newpage
 
