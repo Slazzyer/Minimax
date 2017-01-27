@@ -2,6 +2,7 @@
 
 \usepackage{graphicx}
 \hyphenation{Speicher-zel-le}
+\setcounter{tocdepth}{2}
 
 \renewcommand{\contentsname}{Inhaltsverzeichnis}
 
@@ -98,13 +99,13 @@
             \hline
             \textbf{Name} & \textbf{Aufgabe} \\
             \hline
-            Maximilian Lumpe & something something  \\
+            Maximilian Lumpe & Ausarbeitung der Dokumentation  \\
             \hline
-            Niklas Blume & nothing ... boooh ... \\
+            Niklas Blume & Anfertigung der Minimax-Maschine \\
             \hline
-            Jan Feuchter & a bit 01001110011001010111001001100100001111000010111000111100 \\
+            Jan Feuchter & Anfertigung der Minimax-Maschine \\
             \hline
-            Phu Bac Duong & d \\
+            Phu Bac Duong & Ausarbeitung der Dokumentation \\
             \hline
         \end{tabular}
     \end{table}
@@ -112,23 +113,29 @@
     \newpage
 
     \section{Projektdurchf{\"u}hrung}
-    \subsection{Initialisierung und erstes Startbit-Muster(Zeile 0-6)}
+    \subsection{Initialisierung und erstes Startbit-Muster}
+	\includegraphics[width=13cm]{img/k1.png} \\
     Zun{\"a}chst wird die erste Speicherzelle in das Register MDR geladen. Durch eine bitwise-and Verkn{\"u}pfung werden nur die vier LSBs betrachtet. Sind diese gleich 14, startet der Algorithmus. Ansonsten shiftet das MDR und die neuen LSBs werden betrachtet, solange bis das Startbitmuster gefunden wurde. Gleichzeit wird das Offset vom Speicherzellenanfang mitgespeichert.
 
-    \subsection{Kanalnummer extrahieren (Zeile 7-13)}
-    Nun wird die n{\"a}chste Speicherzelle geladen und diese um das Offset geshiftet. Hierdurch erh{\"a}lt man in dne unteren 16 Bit die Kanalnummer, welche durch bitwise-and mit 65.535(ffff) extrahiert wird.
+    \subsection{Kanalnummer extrahieren }
+	\includegraphics[width=13cm]{img/k2.png} \\
+    Nun wird die n{\"a}chste Speicherzelle geladen und diese um das Offset geshiftet. Dadurch erh{\"a}lt man in den unteren 16 Bit die Kanalnummer, welche durch bitwise-and mit 65.535(\texttt{0xFFFF}) extrahiert wird.
 
-    \subsection{Datenanfang ermitteln (Zeile 14-24)}
-    Nun wird wieder die n{\"a}chste Speicherzelle betrachtet. Auf das Offset wird zus{\"a}tzlich 16 addiert, da im ersten Schleifendurchlauf 16 Bit {\"u}bersprung werden m{\"u}ssen. Die verbleibenen Bits bis zum Speicherzellenende werden in OffsetData mitgez{\"a}hlt. Sollte das Offset gr{\"o}ßer als 16 sein (Flag vom Ende des Algorithmus ist gesetzt) ist eine weitere Speicherzelle ohne Information und kann {\"u}bersprungen werden.
+    \subsection{Datenanfang ermitteln}
+	\includegraphics[width=13cm]{img/k3.png} \\
+    Nun wird wieder die n{\"a}chste Speicherzelle betrachtet. Auf das Offset wird zus{\"a}tzlich 16 addiert, da im ersten Schleifendurchlauf 16 Bit {\"u}bersprungen werden m{\"u}ssen. Die verbleibenden Bits bis zum Speicherzellenende werden in OffsetData mitgez{\"a}hlt. Sollte das Offset gr{\"o}{\ss}er als 16 sein (Flag vom Ende des Algorithmus ist gesetzt) ist eine weitere Speicherzelle ohne Information und kann {\"u}bersprungen werden.
 
-    \subsection{Datenbits z{\"a}hlen (Zeile 25-37)}
-    Zun{\"a}chst wird diese Speicherzelle um das verbleibene Offset geshiftet. Anschließend wird {\"u}berpr{\"u}ft, ob nun die vier LSBs widerum das Startbitmuster sind. Ist dies der Fall, springt der Algoritmus zum Schritt. Ist dies nicht der Fall, wird die Speicherzelle geshiftet, der Counter der DAtenbits erh{\"o}ht sowie der Counter der verbleibenen Bits bis Speicherzellenende erniedrigt. Sind keine Bits mehr bis Speicherzellenende vorhanden, wird in die n{\"a}chste Speicherzelle gewechselt und der Wert wieder auf 32 gesetzt. Die Speicherzelle wird jedoch in jedem Fall solange geshiftet bis das Startbitmuster erkannt wurde.
+    \subsection{Datenbits z{\"a}hlen}
+	\includegraphics[width=13cm]{img/k4.png} \\
+    Zun{\"a}chst wird diese Speicherzelle um das verbleibene Offset geshiftet. Anschlie{\ss}end wird {\"u}berpr{\"u}ft, ob nun die vier LSBs wiederum das Startbitmuster sind. Ist dies der Fall, springt der Algoritmus zum Schritt. Ist dies nicht der Fall, wird die Speicherzelle geshiftet, der Counter der Datenbits erh{\"o}ht sowie der Counter der verbleibenden Bits bis Speicherzellenende erniedrigt. Sind keine Bits mehr bis Speicherzellenende vorhanden, wird in die n{\"a}chste Speicherzelle gewechselt und der Wert wieder auf 32 gesetzt. Die Speicherzelle wird jedoch in jedem Fall solange geshiftet, bis das Startbitmuster erkannt wurde.
 
-    \subsection{Abspeichern (zeile 38-47)}
-    Als n{\"a}chstes wird die aktuelle Speicherzelle tempor{\"a}r zwischen gespeichert. Auf die maximale Datenl{\"a}nge des Pakets wird nun das zweifache des Kanals addiert, da f{\"u}r jeden Kanal zwie Speicherzellen ben{\"o}tigt werden. In der ersten Speicherzelle wird die Kanalnummer abgelegt, in der zweiten die Anzahl der Datenbits. Anschließen wird die Speicheradresse wieder auf ihren {\"u}rsprunglichen Wert zur{\"u}ckgesetzt.
+    \subsection{Abspeichern}
+	\includegraphics[width=13cm]{img/k5.png} \\
+    Als n{\"a}chstes wird die aktuelle Speicherzelle tempor{\"a}r zwischen gespeichert. Auf die maximale Datenl{\"a}nge des Pakets wird nun das zweifache des Kanals addiert, da f{\"u}r jeden Kanal zwei Speicherzellen ben{\"o}tigt werden. In der ersten Speicherzelle wird die Kanalnummer abgelegt, in der zweiten die Anzahl der Datenbits. Anschlie{\ss}en wird die Speicheradresse wieder auf ihren {\"u}rsprunglichen Wert zur{\"u}ckgesetzt.
 
-    \subsection{Offset-Manipulation (Zeile 48-57)}
-    War das Offset beim Entdecken des Startbismuster gr{\"o}ßer gleich 16, so f{\"u}hrt dies w{\"a}hrend "Datenanfang ermitteln" zu einem Offset, das gr{\"o}ßer ist als die Speicherzelle selber. Anstelle dessen wird das Offset bei Werten gr{\"o}ßer gleich 16 um 32 verringert und ein Flag, was das {\"u}berspringen einer Speicherzelle zufolge hat.
+    \subsection{Offset-Manipulation}
+	\includegraphics[width=13cm]{img/k6.png} \\
+    War das Offset beim Entdecken des Startbismuster gr{\"o}{\ss}er gleich 16, so f{\"u}hrt dies w{\"a}hrend "Datenanfang ermitteln" zu einem Offset, das gr{\"o}{\ss}er ist als die Speicherzelle selber. Anstelle dessen wird das Offset bei Werten gr{\"o}{\ss}er gleich 16 um 32 verringert und ein Flag, was das {\"U}berspringen einer Speicherzelle zufolge hat.
 
     \newpage
 
@@ -140,12 +147,10 @@
         \item \textbf{alu{\_}add (Anzahl der erg{\"a}nzten ALU-Befehle):} 17
         \item \textbf{alu{\_}use (Anzahl der verwendeten ALU-Befehle):} 58
     \end{itemize}
-
-
+	$t_{bewertet} = t_{bench} * (1 + 0,1*reg + 0,015*alu{\_}add + 0,05*const)$ \\
+	$n_{bewertet} = n_{algorithmus} + 5* reg + 3*alu{\_}use + 5* const$ \\
 
     \subsection{Laufzeit}
-
-    $t_{bewertet} = t_{bench} * (1 + 0,1*reg + 0,015*alu{\_}add + 0,05*const)$
 
     \subsubsection{Benchmark 1}
     $t_{bewertet} = 12365 * (1 + 0,1*9 + 0,015*17 + 0,05*6) = 30356,075$
@@ -157,15 +162,19 @@
     $t_{bewertet} = 38510 * (1 + 0,1*9 + 0,015*17 + 0,05*6) = 94542,050$
 
     \subsection{Algorithmusl{\"a}nge}
-    $n_{bewertet} = n_{algorithmus} + 5* reg + 3*alu{\_}use + 5* const$\\
-    $n_{bewertet} = 59+5*9+3*58+5*6 = 308$
+    $n_{bewertet} = 59 + 5 * 9 + 3 * 58 + 5 * 6 = 308$
 
 
     \newpage
 
     \section{Anhang: Flussdiagramme, Maschinen{\"u}bersicht}
+	\includegraphics[width=13cm]{img/algoComplete.png} \\
+	\newpage
 
-    \newpage
+	\begin{center}
+	\includegraphics[height=19cm\textwidth]{img/maschine.jpg}
+	\end{center}
+	\newpage
 
     \section{Anhang: Verwendete Hilfsmittel}
 	\begin{itemize}
